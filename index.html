@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YANI WANG</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(180deg, #e2dcf2 0%, #cdc6e8 100%);
+    min-height: 100vh;
+    color: #2a2a2a;
+    overflow-x: hidden;
+    user-select: none;
+    position: relative;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+  }
+
+  .top-left, .top-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .pill {
+    background: #fdf6ee;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+  }
+
+  .clock-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid #b3433f;
+    display: inline-block;
+    position: relative;
+  }
+  .clock-dot::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 6.5px;
+    width: 1.5px; height: 4px;
+    background: #b3433f;
+  }
+
+  .logo-img { width: 22px; height: 22px; vertical-align: middle; }
+
+  .window-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px 140px;
+  }
+
+  .window {
+    width: min(900px, 100%);
+    background: #fdf6ee;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .window-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1.5px solid #2a2a2a;
+  }
+
+  .window-controls { display: flex; gap: 10px; align-items: center; }
+
+  .window-controls .ctrl {
+    font-size: 16px; line-height: 1; cursor: pointer;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid transparent; border-radius: 4px;
+  }
+  .window-controls .ctrl:hover { border-color: #2a2a2a; }
+
+  .window-title { font-weight: 700; letter-spacing: 2px; font-size: 14px; }
+
+  .content-wrap {
+    display: flex;
+    overflow: hidden;
+    border-bottom: none;
+  }
+
+  .content-area {
+    flex: 1;
+    height: 520px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 3px),
+      linear-gradient(135deg, #efece4 0%, #f3dfb9 50%, #e7b888 100%);
+    padding: 40px 36px 48px;
+  }
+  .content-area::-webkit-scrollbar { display: none; }
+
+  /* Custom retro scrollbar */
+  .custom-scrollbar {
+    width: 18px;
+    display: flex;
+    flex-direction: column;
+    border-left: 1.5px solid #2a2a2a;
+    background: #f0e8d5;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .scroll-btn {
+    width: 100%;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    cursor: pointer;
+    flex-shrink: 0;
+    background: #fdf6ee;
+    border-bottom: 1.5px solid #2a2a2a;
+    color: #2a2a2a;
+  }
+  .scroll-btn.scroll-down {
+    border-top: 1.5px solid #2a2a2a;
+    border-bottom: none;
+    margin-top: auto;
+  }
+  .scroll-btn:hover { background: #f0e8d5; }
+  .scroll-btn:active { background: #e0d8c5; }
+
+  .scroll-track {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .scroll-thumb {
+    position: absolute;
+    width: 100%;
+    min-height: 24px;
+    background: #fdf6ee;
+    border: 1.5px solid #2a2a2a;
+    border-left: none;
+    border-right: none;
+    box-sizing: border-box;
+    cursor: grab;
+  }
+  .scroll-thumb:active { cursor: grabbing; background: #f0e8d5; }
+
+  .content-area .tag {
+    font-size: 11px; letter-spacing: 3px;
+    color: #b3433f; font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .content-area h1 {
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 700; line-height: 1.15;
+    letter-spacing: 1px; margin-bottom: 22px;
+  }
+
+  .content-area h2 {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; color: #b3433f;
+    margin-top: 30px; margin-bottom: 12px;
+  }
+
+  .content-area p {
+    font-size: 13.5px; line-height: 1.88;
+    color: #3a3a3a; margin-bottom: 14px;
+    max-width: 660px;
+    font-weight: 700;
+  }
+
+  .content-area em { font-style: italic; }
+
+  .ea-toggle { margin-bottom: 10px; }
+  .ea-toggle-btn {
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px;
+    background: #e8e2d6;
+    border: 1.5px solid #2a2a2a;
+    box-shadow: 2px 2px 0 #2a2a2a;
+    font-family: 'Courier New', monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: #2a2a2a; text-align: left; cursor: pointer;
+  }
+  .ea-toggle-btn:active { box-shadow: none; transform: translate(2px, 2px); }
+  .ea-toggle-btn.open { background: #2a2a2a; color: #e8e2d6; box-shadow: none; }
+  .ea-toggle-icon { font-size: 14px; flex-shrink: 0; }
+  .ea-toggle-arrow { margin-left: auto; flex-shrink: 0; font-size: 9px; letter-spacing: 0; }
+  .ea-toggle-body { display: none; padding: 12px 0 4px 0; }
+  .ea-toggle-body p { margin-bottom: 0; }
+
+  .content-area .byline {
+    margin-top: 36px; padding-top: 20px;
+    border-top: 1px solid rgba(42,42,42,0.18);
+    font-size: 11px; letter-spacing: 2px; color: #7a7a7a;
+  }
+
+  .hint {
+    margin-top: 20px; font-size: 12px;
+    letter-spacing: 1px; color: #8a8a8a;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hint .arrow { display: inline-block; animation: bounce 1.6s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  .filebar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 14px; border-top: 1.5px solid #2a2a2a;
+    font-size: 12px; letter-spacing: 1px;
+  }
+
+  .filebar-play {
+    width: 50px; height: 34px;
+    background: #cdeef0;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .filebar-play:hover { transform: translate(1px, 1px); }
+
+  .nowplaying { border-top: 1.5px solid #2a2a2a; padding: 14px 18px; }
+
+  .np-row {
+    display: flex; justify-content: space-between;
+    align-items: baseline; margin-bottom: 8px;
+  }
+
+  .np-title { font-weight: 700; font-size: 14px; }
+  .np-title .dot { color: #c9544f; font-size: 18px; vertical-align: -2px; }
+  .np-icons { display: flex; gap: 14px; font-size: 16px; opacity: 0.5; }
+
+  .np-sub {
+    font-size: 12px; color: #5a5a5a;
+    border-top: 1px solid #e6ddcf;
+    padding-top: 10px; padding-bottom: 10px;
+  }
+
+  .np-status {
+    display: flex; justify-content: space-between;
+    align-items: center; padding-top: 4px;
+  }
+  .np-status .status-text { font-weight: 700; font-size: 13px; }
+  .np-status .status-text .triangle { font-size: 10px; color: #c9544f; margin-right: 6px; }
+
+  .transport { display: flex; gap: 6px; }
+  .transport button {
+    width: 50px; height: 38px;
+    border: 1.5px solid #2a2a2a; border-radius: 4px;
+    background: #fdf6ee; font-size: 14px;
+    cursor: pointer; font-family: inherit;
+  }
+  .transport button.play { background: #cdeef0; }
+  .transport button.fav { background: #f7d3da; }
+  .transport button:hover { transform: translate(1px,1px); }
+
+  .channelbar {
+    display: flex; gap: 10px;
+    border-top: 1.5px solid #2a2a2a; padding: 12px 14px;
+  }
+
+  .channel-select {
+    flex: 1; background: #f6efe2;
+    border: 1.5px solid #2a2a2a; border-radius: 4px;
+    padding: 8px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; letter-spacing: 1px;
+  }
+
+  .live-tag {
+    background: #2a2a2a; color: #fdf6ee;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;
+  }
+
+  .volume {
+    width: 130px; background: #fdf6ee;
+    border: 1.5px solid #2a2a2a; border-radius: 4px;
+    display: flex; align-items: center;
+    padding: 0 10px; gap: 8px; font-size: 14px;
+  }
+  .volume .bars {
+    flex: 1; height: 16px;
+    background: repeating-linear-gradient(90deg, #2a2a2a 0 3px, transparent 3px 6px);
+    opacity: 0.5;
+  }
+
+  .dock-wrap {
+    position: fixed; bottom: 24px; left: 0; right: 0;
+    display: flex; justify-content: center; padding: 0 20px;
+  }
+
+  .dock {
+    display: flex; background: #fdf6ee;
+    border: 1.5px solid #2a2a2a; border-radius: 6px;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    overflow-x: auto; max-width: 100%;
+  }
+
+  .dock-item {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 8px; padding: 14px 20px;
+    border-right: 1.5px solid #2a2a2a;
+    cursor: pointer; font-size: 11px; letter-spacing: 1px;
+    transition: background 0.15s; flex-shrink: 0;
+  }
+  .dock-item:last-child { border-right: none; }
+  .dock-item:hover { background: #f7ecd9; }
+
+  .dock-item .icon {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dock-item .icon img {
+    max-width: 28px; max-height: 28px;
+    image-rendering: pixelated;
+  }
+
+  .floating-window {
+    position: absolute; width: 380px;
+    background: #fdf6ee;
+    border: 1.5px solid #2a2a2a; border-radius: 4px;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+    overflow: hidden; z-index: 50; display: none;
+  }
+  .floating-window.active { display: block; animation: pop 0.16s ease-out; }
+  .floating-window.dragging { animation: none; box-shadow: 8px 8px 0 rgba(0,0,0,0.18); }
+
+  @keyframes pop {
+    from { transform: scale(0.94); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .fw-titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1.5px solid #2a2a2a;
+    cursor: move; background: #fdf6ee;
+  }
+  .fw-title { font-weight: 700; letter-spacing: 2px; font-size: 13px; pointer-events: none; }
+  .fw-close {
+    width: 22px; height: 22px;
+    border: 1px solid transparent; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 15px;
+  }
+  .fw-close:hover { border-color: #2a2a2a; }
+
+  .fw-row {
+    display: flex;
+    max-height: 380px;
+    overflow: hidden;
+  }
+  .fw-row.fw-tall { max-height: 540px; }
+
+  .fw-body {
+    padding: 26px 22px; font-size: 13px; line-height: 1.9;
+    flex: 1;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .fw-body::-webkit-scrollbar { display: none; }
+  .fw-proj-img { width: 100%; margin-bottom: 14px; }
+  .fw-proj-img img { width: 100%; height: auto; display: block; border: 1.5px solid #2a2a2a; }
+  .fw-body .fw-tag { font-size: 10px; letter-spacing: 3px; color: #b3433f; font-weight: 700; margin-bottom: 10px; }
+  .fw-body h2 { font-size: 20px; font-weight: 700; margin-bottom: 14px; letter-spacing: 1px; }
+  .fw-body p { color: #4a4a4a; margin-bottom: 10px; }
+  .fw-body ul { color: #4a4a4a; margin: 0 0 10px 0; padding-left: 18px; }
+  .fw-body ul li { margin-bottom: 6px; line-height: 1.6; }
+  .ea-item { margin-bottom: 7px; }
+  .ea-btn {
+    width: 100%; text-align: left;
+    font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px; color: #2a2a2a;
+    background: #fdf6ee; border: 1.5px solid #2a2a2a; border-radius: 4px;
+    padding: 8px 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    line-height: 1.4;
+  }
+  .ea-btn .ea-icon { font-size: 13px; flex-shrink: 0; }
+  .ea-btn .ea-arrow { margin-left: auto; flex-shrink: 0; font-size: 10px; }
+  .ea-btn:hover { background: #f0e8d5; }
+  .ea-btn.open { background: #2a2a2a; color: #fdf6ee; border-radius: 4px 4px 0 0; }
+  .ea-detail { display: none; border: 1.5px solid #2a2a2a; border-top: none; border-radius: 0 0 4px 4px; padding: 10px 12px; margin-top: -1px; }
+  .ea-detail p { color: #4a4a4a; margin: 0; font-size: 12px; line-height: 1.7; }
+
+  .tl-sem { border-left: 2px solid #b3433f; padding-left: 10px; margin-bottom: 14px; }
+  .tl-sem-label { font-size: 9px; letter-spacing: 3px; color: #b3433f; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+  .tl-item { font-size: 12px; margin-bottom: 3px; }
+  .tl-core { font-weight: 700; }
+  .tl-elec { color: #666; font-style: italic; }
+  .tl-work { color: #4a4a4a; }
+
+  /* Project selector panel */
+  .project-panel {
+    border: 1.5px solid #2a2a2a;
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 660px;
+    background: #fdf6ee;
+    margin: 20px 0 14px;
+    font-weight: 400;
+  }
+
+  .pp-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1.5px solid #2a2a2a;
+  }
+
+  .pp-tab {
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-align: center;
+    background: #e0d8c8;
+    cursor: pointer;
+  }
+  .pp-tab:first-child { border-right: 1.5px solid #2a2a2a; }
+  .pp-tab.active { background: #fdf6ee; }
+  .pp-tab:hover:not(.active) { background: #ede0cc; }
+
+  .pp-pane { padding: 14px; }
+
+  /* Small square icon buttons for core projects */
+  .pp-icon-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .pp-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 86px; height: 86px;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #fdf6ee;
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .pp-icon-btn img { width: 28px; height: 28px; image-rendering: pixelated; }
+  .pp-icon-btn.selected { background: #2a2a2a; color: #fdf6ee; }
+  .pp-icon-btn.selected img { filter: invert(1); }
+  .pp-icon-btn:hover:not(.selected) { background: #f0e8d5; }
+
+  /* Long list buttons for electives */
+  .pp-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 4px;
+    margin-bottom: 7px;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    background: #fdf6ee;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+  .pp-item:last-child { margin-bottom: 0; }
+  .pp-item.selected { background: #2a2a2a; color: #fdf6ee; }
+  .pp-item:hover:not(.selected) { background: #f0e8d5; }
+
+  .pp-desc {
+    border-top: 1.5px solid #2a2a2a;
+    padding: 12px 16px;
+    font-size: 11.5px;
+    line-height: 1.75;
+    color: #4a4a4a;
+    font-weight: 700;
+    min-height: 52px;
+  }
+
+  /* Instagram-style elective cards */
+  .fw-instagram { width: 460px; }
+  .fw-instagram .fw-body { padding: 0; }
+
+  .insta-card {
+    padding: 16px;
+    border-bottom: 1.5px solid #e0d8c8;
+  }
+  .insta-card:last-child { border-bottom: none; }
+
+  .insta-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .insta-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid #2a2a2a;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+  .insta-username { font-weight: 700; font-size: 12px; letter-spacing: 1px; flex: 1; }
+  .insta-time { font-size: 11px; color: #8a8a8a; letter-spacing: 0; }
+
+  .insta-img-wrap {
+    width: 100%;
+    border: 1.5px solid #2a2a2a;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .insta-img-wrap img { width: 100%; display: block; object-fit: cover; }
+
+  .insta-actions {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: #4a4a4a;
+  }
+
+  .insta-caption {
+    font-size: 12px;
+    line-height: 1.75;
+    color: #3a3a3a;
+    font-weight: 700;
+  }
+  .insta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+    padding-bottom: 2px;
+  }
+  .insta-tag {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    border: 1.5px solid #b3433f;
+    color: #b3433f;
+    padding: 2px 7px;
+    cursor: default;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .topbar { flex-wrap: wrap; gap: 10px; }
+    .dock-item { padding: 10px 12px; }
+    .channelbar { flex-direction: column; }
+    .volume { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="top-left">
+      <img class="logo-img" src="poolsuite.net/favicon.png" alt="">
+      <div class="pill">YANI WANG — PORTFOLIO</div>
+    </div>
+    <div class="top-right">
+      <div class="pill" id="date-pill">SUN 14 JUN 2026</div>
+      <div class="pill"><span class="clock-dot"></span><span id="clock-text"> 12:58</span></div>
+    </div>
+  </div>
+
+  <div class="window-wrap">
+    <div class="window">
+      <div class="window-titlebar">
+        <div class="window-controls">
+          <div class="ctrl">✕</div>
+          <div class="ctrl">▦</div>
+          <div class="ctrl">⌐</div>
+        </div>
+        <div class="window-title">YANI WANG — PI&amp;V AND PDP</div>
+      </div>
+
+      <div class="content-wrap">
+      <div class="content-area" id="content-scroll">
+        <h2>1. PERSONAL IDENTITY</h2>
+
+        <h2>1.1 DEVELOPMENT AND CONNECTION</h2>
+
+        <p>In the first year of my master, I explored the possibilities of UXD (User Experience Design) through tangible interaction. In my M1.1 project, I investigated the relationship between caregivers and care receivers, using a physical product to mediate and support their interaction. In M1.2 project, I explored tangible interaction through air-activated buttons. Although they addressed different contexts, they shared an important characteristic: the interface changed in response to users' actions. Through practice, I gradually realized that compared to physical form itself, what concerns me more is how system behavior continuously influences users' decisions and actions across different contexts.</p>
+
+        <p>As AI (Artificial Intelligence) increasingly intervenes in everyday life, interaction is shifting from feedback between humans and objects to negotiation between humans and systems. This made me reconsider the designer's responsibility in shaping systems that not only respond to users, but may also influence their decisions and behaviour.</p>
+
+        <p>My previous project at Orbisk (M2.1) for can be understood as an initial exploration of this direction. In this M2.1 project, the research focused on whether a dynamic user interface could become a meaningful and feasible design proposition. The results were positive, suggesting that when interface adaptation is grounded in users' roles, task goals, and information needs, dynamic interfaces can bring practical value to the user experience.</p>
+
+        <p>My final master project builds on that earlier exploration, but shifts the research context, interaction logic, and design challenge. Unlike the Orbisk project, which focused on an internal dashboard, this study turns its attention to behaviour-driven dynamic content adaptation in public-facing financial websites. This progression has shaped my professional identity as a system-oriented interaction designer interested in how adaptive digital systems interpret user behaviour and respond responsibly. It also connects to my broader design vision of making emerging technologies meaningful and accessible in everyday contexts, while supporting my professional goal of translating complex AI-driven concepts into technically feasible and user-centred digital experiences.</p>
+
+        <h2>1.2 ROLE, STRENGTH AND WEAKNESS</h2>
+
+        <p>As a designer, I usually take on the role of a system builder. I tend to engage from the earliest stages of a project, identifying core pain points to construct the problem structure and remaining involved in decision-making throughout every phase of the design process. I break down complex problems into testable hypotheses and continuously calibrate my judgment through user testing and data analysis. Years of experience in UXD have enabled me to detect unarticulated needs from fragmented user feedback and to translate these insights into actionable design solutions through rapid prototyping and iteration.</p>
+
+        <p>In multidisciplinary teams, one of my strengths is translating between user needs, business expectations, and technical constraints. However, I sometimes remain too independent during early concept development and communicate my reasoning only after a direction has already been formed. I therefore need to involve collaborators earlier and use intermediate artefacts to support shared decision-making.</p>
+
+        <p>My strongest Expertise Areas are User &amp; Society and Math, Data &amp; Computing, as I rely heavily on user research, behavioural data, and structured analysis. Business &amp; Entrepreneurship has also become an important part of my development through my daily work in an industry internship, where I continuously consider stakeholder expectations, business objectives, and the practical value of design decisions. Technology &amp; Realization has developed through functional prototyping, but it remains an area in which I need deeper technical understanding, particularly when translating adaptive concepts into robust and scalable systems. I also aim to strengthen Creativity &amp; Aesthetics by exploring a broader range of visual and experiential alternatives before converging on a system solution.</p>
+
+        <p>I am clearly aware of my limitations as well. In the current design landscape where AI plays a central role, I am still in the learning phase when it comes to translating design concepts into directly operational implementations, particularly in using AI-assisted development tools, where my experience remains limited. However, I do believe that designers don't need to become deep engineers. For me, what matters more is understanding the boundaries of technology, ensuring that design solutions can be implemented and tested, and continuously optimized in real-world use.</p>
+
+        <h2>1.3 BELIEFS, NORMS, AND VALUES</h2>
+
+        <p>What is interaction?</p>
+
+        <p>I believe that interest emerges from the ongoing process in which expectations are repeatedly validated and disrupted through feedback, thereby creating a positive experience for the user. Yet this stimulation is neither random nor a fleeting sensory shock, but the controlled variation built upon clear interaction rules. When stimulation is structured, users can transform exploration into sustained engagement.</p>
+
+        <p>I value clarity, autonomy, and trust, particularly when designing for complex or sensitive contexts. These values led me to avoid unrestricted interface generation and explicit conversational interaction in my final project.</p>
+
+        <p>That's why I aspire to become a designer who establishes order within complex systems, helping users gain understanding and a sense of control in an increasingly uncertain technological environment, and ultimately sustaining the positive experience of interaction. That's why in the future, I hope to approach AI as a design material, something to think with and design through. By intervening in feedback mechanisms and system rules, I aim to shape interaction experiences that are more understandable and more trustworthy.</p>
+
+        <h2>2. VISION</h2>
+
+        <p>AI is gradually evolving from a system with generative and decision-making capabilities into a new infrastructure of productivity. Interaction design has gradually shifted from designing static interfaces toward designing responsive and adaptive systems. Earlier digital products largely required users to learn fixed structures or manually configure their experience. With behavioural data and generative AI, systems can now increasingly adapt to users. However, this shift also gives systems greater power to interpret users and influence their choices, raising questions about transparency, autonomy, and digital inclusion.</p>
+
+        <p>Under these circumstances, I anticipate a highly naturalized form of AI interaction. Technology will no longer exist as an explicit interface, instead, it will be embedded into everyday life, reducing learning costs and operational burden. However, such naturalness does not imply a loss of control. Rather, it means achieving smooth collaboration within a clear structure. Only when system behavior can be understood and negotiated can humans truly engage with new technologies in a seamless way.</p>
+
+        <p>My long-term vision is to design adaptive systems in which personalization does not increase learning cost, but instead supports users in gradually forming an understandable and structured customized experience.</p>
+
+        <p>I aim to address the structural tension between system-driven personalization and user-driven customization, developing interaction models where both can coexist within a coherent design system framework. I also aim to work closely with developers, business stakeholders, and users so that adaptive behaviour remains technically feasible, commercially meaningful, and socially responsible. On a societal level, this approach could make AI-supported services more accessible to people who may not understand or actively operate complex AI tools. It may also reduce the risk that personalization becomes manipulative or exclusionary.</p>
+
+        <p>Ultimately, I want to shape interaction systems in which users can progressively define their own ways of use without losing clarity or a sense of control, ensuring that adaptation enhances long-term stability rather than disrupting it.</p>
+
+        <h2>3. PAST AND PRESENT</h2>
+
+        <h2>3.1 PAST</h2>
+
+        <p>My design journey across the first three semesters was shaped by a gradual shift in focus — from the tangibility of form to the behavior of systems.</p>
+
+        <p>In Semester 1, M1.1 introduced me to designing for emotional relationships. Working with caregivers and care receivers, I learned that the most meaningful design interventions are not about adding features, but about creating space for connection. The product used playful, asynchronous prompts to surface wishes and needs, and it changed how I understood interaction: not as a transaction, but as an ongoing dialogue between people, mediated by a system.</p>
+
+        <p>Meta Touch (M1.2) continued this inquiry through a different material. Designing pneumatic, shape-changing interfaces taught me that haptic feedback is a form of communication, and that the interface is never neutral. Every physical response shapes how a user thinks and acts. Across both M1 projects, I kept returning to the same realization: compared to the physical form itself, what interested me more was how system behavior continuously shapes users' decisions across time and context.</p>
+
+        <p>The electives across Semesters 1 and 2 helped me connect my interest in system behaviour with the ability to make interaction tangible and testable. Although they explored varied contexts, they shared one contribution to my development: each showed me how emerging technologies could be transformed into testable interactions. DCM100 introduced LLM-based simulation, while DBM140 demonstrated how sensing, computation, and embedded systems could respond to real-world situations. DCM110 encouraged me to simplify complex technologies into understandable interventions, and DCM210 and DCM180 strengthened my awareness of how visual and perceptual design influences whether people can interpret and trust them.</p>
+
+        <p>Reflecting on these experiences, I realised that making is central to how I think as a designer. I prototype to explore possibilities, challenge assumptions, and understand how form, behaviour, and context shape interaction. This gradually shifted my focus from designing isolated objects toward designing the conditions through which systems perceive, respond to, and influence users.</p>
+
+        <p>The Orbisk internship (M2.1) marked the first time I worked with a real stakeholder in a real industry context in Europe. Designing a dynamic dashboard for users in different professional roles taught me that personalization creates value only when it is connected to concrete tasks, responsibilities, and workflows. Rather than adapting the interface around speculative user profiles, I learned to ground design changes in validated user needs and observable role differences. It also established a principle that later guided my FMP: adaptive interfaces should respond to meaningful user behaviour without making unsupported assumptions about users.</p>
+
+        <div class="project-panel">
+          <div class="pp-header">
+            <div class="pp-tab active" data-tab="core">CORE PROJECTS</div>
+            <div class="pp-tab" data-tab="elec">ELECTIVES</div>
+          </div>
+
+          <div class="pp-pane" id="pp-pane-core">
+            <div class="pp-icon-grid">
+              <div class="pp-icon-btn selected" data-id="m11">
+                <img src="poolsuite.net/img/pointer-1.b0e8267f.svg" alt="">M1.1
+              </div>
+              <div class="pp-icon-btn" data-id="m12">
+                <img src="poolsuite.net/img/grab.7c368c25.svg" alt="">M1.2
+              </div>
+              <div class="pp-icon-btn" data-id="m21">
+                <img src="poolsuite.net/img/click.2ec9eed1.svg" alt="">M2.1
+              </div>
+              <div class="pp-icon-btn" data-id="fmp">
+                <img src="poolsuite.net/img/pointer-loading.f89d8fee.svg" alt="">FMP
+              </div>
+            </div>
+          </div>
+
+          <div class="pp-pane" id="pp-pane-elec" style="display:none">
+            <div class="pp-item" data-id="dcm100">DCM100 – Constructive Design Research</div>
+            <div class="pp-item" data-id="dbm140">DBM140 – Embodying Intelligent Behavior</div>
+            <div class="pp-item" data-id="dcm180">DCM180 – The Sound of Smart Things</div>
+            <div class="pp-item" data-id="dbm170">DBM170 – Designing User Interfaces with Emerging Technologies</div>
+            <div class="pp-item" data-id="dcm210">DCM210 – Creativity and Aesthetics of Data &amp; AI</div>
+            <div class="pp-item" data-id="dcm110">DCM110 – A Designerly Perspective on IoT (RDD)</div>
+          </div>
+
+        </div>
+
+        <h2>3.2 PRESENT</h2>
+
+        <p>Working with Van Lanschot Kempen, I am designing within a context that demands not just usability, but professional credibility, long-term relationship continuity, and alignment with the following expertise areas.</p>
+
+        <div class="ea-toggle">
+          <button class="ea-toggle-btn"><span class="ea-toggle-icon">⎋</span>USER &amp; SOCIETY<span class="ea-toggle-arrow">▶</span></button>
+          <div class="ea-toggle-body">
+            <p>This is the area where I feel most confident. Across all four semesters, my work has been rooted in understanding how people relate to systems and to each other. I have developed strong skills in user research, contextual inquiry, and behavioural analysis, and I am increasingly attentive to the societal implications of adaptive interfaces in high-stakes domains. The move from Orbisk to Van Lanschot Kempen sharpened this further: personalization in financial services is not a convenience feature, it is a responsibility.</p>
+          </div>
+        </div>
+
+        <div class="ea-toggle">
+          <button class="ea-toggle-btn"><span class="ea-toggle-icon">⎋</span>MATH, DATA &amp; COMPUTING<span class="ea-toggle-arrow">▶</span></button>
+          <div class="ea-toggle-body">
+            <p>This area has grown steadily throughout the program. DCM100's use of LLMs as research proxies, DBM140's YOLOv5 integration, and the behavioral inference logic underpinning both M2.1 and FMP have all required me to engage seriously with quantitative and computational methods. I am developing a structured, evidence-based approach to adaptive UI design, using data not to automate experience, but to inform contextual relevance at low computational cost and without requiring explicit user effort.</p>
+          </div>
+        </div>
+
+        <div class="ea-toggle">
+          <button class="ea-toggle-btn"><span class="ea-toggle-icon">⎋</span>BUSINESS &amp; ENTREPRENEURSHIP<span class="ea-toggle-arrow">▶</span></button>
+          <div class="ea-toggle-body">
+            <p>The Orbisk internship was transformative for this area. I learned how design decisions are inseparable from stakeholder expectations, resource constraints, and measurable business outcomes. FMP deepens this: Van Lanschot Kempen operates in a regulated, relationship-driven market where design choices carry real commercial and reputational weight. I am developing the ability to translate user value into business value, and to articulate design rationale in terms that resonate with non-design stakeholders across different levels of an organisation.</p>
+          </div>
+        </div>
+
+        <div class="ea-toggle">
+          <button class="ea-toggle-btn"><span class="ea-toggle-icon">⎋</span>TECHNOLOGY &amp; REALIZATION<span class="ea-toggle-arrow">▶</span></button>
+          <div class="ea-toggle-body">
+            <p>I approach technology as a design material rather than a constraint. From pneumatic actuators in Meta Touch, to YOLOv5 detection pipelines in Cyclotron, to front-end adaptive logic in FMP, I have progressively engaged with technical realization across the program. This area is still developing, since I aim to build deeper fluency in implementation, particularly around AI-driven UI adaptation that is lightweight, explainable, and embedded naturally into existing interaction flows rather than imposed as an additional conversational layer.</p>
+          </div>
+        </div>
+
+        <div class="ea-toggle">
+          <button class="ea-toggle-btn"><span class="ea-toggle-icon">⎋</span>CREATIVITY &amp; AESTHETICS<span class="ea-toggle-arrow">▶</span></button>
+          <div class="ea-toggle-body">
+            <p>My aesthetic sensibility is shaped by visual systems that communicate their logic clearly while remaining visually engaging. DCM210 and DCM180 helped me develop this instinct into a more reflective design practice. In my FMP, I explored how visual and interactional choices can directly influence the perceived trustworthiness of financial interfaces. For me, creativity is not only expressed through how a system looks, but also through how it feels to navigate. It lies in the small, deliberate decisions that make complex systems feel clear, coherent, and human.</p>
+          </div>
+        </div>
+
+        <p>The five Expertise Areas do not operate separately in my FMP. The behaviour-driven adaptation mechanism demonstrates how they work together. User &amp; Society helped me determine which user behaviours could be meaningfully and responsibly interpreted. Math, Data &amp; Computing supported the structuring of behavioural signals and adaptation logic, while Technology &amp; Realization allowed me to translate this logic into a functional prototype. Creativity &amp; Aesthetics ensured that interface changes remained visually coherent, legible, and trustworthy. Business &amp; Entrepreneurship grounded these decisions in stakeholder expectations, organisational constraints, and the values of Van Lanschot Kempen. This integration taught me that adaptive interaction cannot be designed as a purely technical feature; its value depends on the alignment of user needs, system logic, visual communication, technical feasibility, and business context.</p>
+
+        <h2>4. FUTURE PLANS</h2>
+
+        <h2>4.1 SHORT TERM GOALS</h2>
+
+        <p>— For the dynamic interaction, I aim to enable AI to proactively support user decision-making and actions at appropriate moments and within appropriate interfaces. In doing so, the AI can help reduce friction, improve efficiency, and become a genuinely empowering presence rather than an additional source of complexity.</p>
+
+        <p>— Strengthen my identity and vision. Although I have already taken the IDPIV elective, throughout my master's journey I have consistently achieved only sufficient level in this area, and I want to further develop and clarify my design position. To advance, I will articulate a clear design positioning statement, define the themes and problems I consistently work on (e.g., AI-supported UX and system-level design), and align my projects, portfolio, and research choices with this direction.</p>
+
+        <p>— Deepen my technical foundation in AI-driven UX by actively using tools such as Cursor, Claude, and Figma AI-Flows. Understand not only how to use these tools, but how AI interprets prompts, structures logic, and follows system-level rules. This will help me to build skills in generative prototyping, and AI-orchestrated workflows that create smoother, more automated user experiences.</p>
+
+        <h2>4.2 LONG TERM GOALS</h2>
+
+        <p>— Develop System-Level AI-UX Thinking. Being able to deconstruct complex products, understand information flows and decision structures, and define how AI should function within a system. Instead of simply designing interfaces, I need to design behavioral logic, and determining when AI should intervene, how it should support users, and how to balance personalization with system consistency and cognitive clarity.</p>
+
+        <p>— Build Deep Technical Understanding Beyond Tool Usage. This includes understanding how large language models interpret prompts, how system rules constrain outputs, how probabilistic generation affects behavior, and how APIs and data flows integrate into product architecture. While I do not need to become an engineer, I must be capable of holding informed technical conversations and designing with implementation awareness.</p>
+
+        <p>— Strengthen Product and Business Judgment. To grow into leadership or strategic roles, I must understand how products create value and generate revenue. This requires connecting UX decisions to measurable outcomes such as retention, activation, or operational efficiency. I need to develop the ability to evaluate trade-offs, prioritize features based on strategic impact, and participate meaningfully in roadmap and product discussions. Without business literacy, my influence would remain limited to interface optimization.</p>
+
+        <h2>4.3 FUTURE CAREER</h2>
+
+        <p>I have always believed that the value of design lies in whether it can genuinely improve people's lives. Only when designers truly believe that their work is meaningful and valuable can they continuously invest the effort required to refine and strengthen it. I consider myself a highly career-oriented designer, and I hope to validate my design thinking within real business environments, allowing my ideas to create measurable impact. This is why I aim to become an AI-UX designer, as AI is reshaping product structures and interaction models, and design must actively engage in this transformation.</p>
+
+        <p>In my professional career development, I aim to grow from a junior to a senior designer, while proactively engaging with AI tools and extending my work beyond static interface design toward system-level logic. I do not want to remain someone who only produces mockups in Figma, but someone to understand how design collaborates with technology and, to some extent, helps drive implementation. During this process, I hope to build a T-shaped skill set, maintaining depth in interaction and user experience while gradually expanding my understanding of technical feasibility and system logic, particularly through hands-on experimentation with coding tools such as Cursor. As AI continues to blur the boundaries between design and development, designers are now in a position to translate ideas into reality more directly than ever before.</p>
+
+        <p>With more experience, I hope to take on higher-level responsibilities, such as becoming a design lead or product owner, reviewing design decisions from a broader perspective and contributing to product strategy, system architecture, and long-term direction, rather than focusing solely on optimizing individual features.</p>
+
+        <p>After accumulating sufficient industry and system-level experience, I would also like to participate in founding a company centered around AI-UX capabilities, focusing on building more understandable and negotiable human–automation systems, and using design as a driving force for sustainable and real-world impact.</p>
+
+      </div>
+      <div class="custom-scrollbar" id="custom-scrollbar">
+        <div class="scroll-btn scroll-up" id="scroll-up">▲</div>
+        <div class="scroll-track" id="scroll-track">
+          <div class="scroll-thumb" id="scroll-thumb"></div>
+        </div>
+        <div class="scroll-btn scroll-down" id="scroll-down">▼</div>
+      </div>
+      </div><!-- end content-wrap -->
+
+      <div class="filebar">
+        <span id="filebar-title">◂ ▸ PI&amp;V AND PDP</span>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dock-wrap">
+    <div class="dock">
+      <div class="dock-item" data-modal="proj-m11">
+        <span class="icon"><img src="poolsuite.net/img/pointer-1.b0e8267f.svg" alt="M1.1"></span>M1.1
+      </div>
+      <div class="dock-item" data-modal="proj-m12">
+        <span class="icon"><img src="poolsuite.net/img/grab.7c368c25.svg" alt="M1.2"></span>M1.2
+      </div>
+      <div class="dock-item" data-modal="proj-m21">
+        <span class="icon"><img src="poolsuite.net/img/click.2ec9eed1.svg" alt="M2.1"></span>M2.1
+      </div>
+      <div class="dock-item" data-modal="proj-fmp">
+        <span class="icon"><img src="poolsuite.net/img/pointer-loading.f89d8fee.svg" alt="FMP"></span>FMP
+      </div>
+      <div class="dock-item" data-modal="electives">
+        <span class="icon"><img src="poolsuite.net/img/insert.56696d34.svg" alt="Electives"></span>Electives
+      </div>
+      <div class="dock-item" data-modal="extracurricular">
+        <span class="icon"><img src="poolsuite.net/img/pointer-3.14c69624.svg" alt="Extra"></span>Extra
+      </div>
+      <div class="dock-item" data-modal="expertise">
+        <span class="icon"><img src="poolsuite.net/img/resize.b89611b9.svg" alt="Expertise"></span>Expertise
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-player" style="top: 60px; left: 40px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — ABOUT</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// WHO I AM</div>
+      <h2>Yani Wang</h2>
+      <p>Interaction designer and master's student at Eindhoven University of Technology. My work sits at the intersection of UX, adaptive systems, and AI — designing digital systems that remain legible, trustworthy, and human-centered even as they grow more intelligent.</p>
+      <p>I describe myself as a system builder: someone who enters problems at the root, maps their connections, and constructs shapes that others can navigate. I care deeply about the difference between systems that serve users and systems that serve themselves.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-newsroom" style="top: 90px; left: 120px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — PROJECTS</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// SELECTED WORK</div>
+      <h2>Projects</h2>
+      <p><strong>M1.1 — Caregiver Interaction</strong><br>Physical product mediating the relationship between caregivers and care receivers. Explored how interfaces change in response to users' actions.</p>
+      <p><strong>M1.2 — Tangible Interaction</strong><br>Investigated air-activated buttons as a form of tangible interface, exploring the design space where physical action meets digital feedback.</p>
+      <p><strong>M2.1 — Orbisk Dynamic UI</strong><br>Industry research on role-based adaptive interfaces for an internal dashboard. Result: dynamic interfaces grounded in real user roles bring measurable practical value.</p>
+      <p><strong>FMP — Adaptive Financial UX</strong><br>Behaviour-driven dynamic content adaptation in public-facing financial websites. Exploring how interfaces can respond to users without undermining transparency or trust.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-mixtapes" style="top: 120px; left: 200px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — PROCESS</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// HOW I WORK</div>
+      <h2>Design Process</h2>
+      <p>I engage from the earliest stages, building the problem structure before reaching for solutions. Complex challenges get broken into testable hypotheses, then calibrated through user research, behavioural data, and structured analysis.</p>
+      <p>In multidisciplinary teams I function as a translator — moving between user needs, business expectations, and technical constraints. Rapid prototyping and iteration are thinking tools, not just delivery artefacts.</p>
+      <p>I'm working on sharing work earlier, using sketches and low-fidelity artifacts to support collaborative sense-making rather than just personal exploration.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-members" style="top: 150px; left: 280px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — VISION</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// WHERE WE'RE HEADED</div>
+      <h2>Design Vision</h2>
+      <p>I'm designing toward a more naturalized form of AI interaction — technology that embeds into everyday life while remaining legible, negotiable, and subject to user control.</p>
+      <p>Long-term vision: adaptive systems where personalization doesn't increase learning cost, but supports users in forming a structured, customized experience over time. Where adaptation enhances rather than undermines clarity and a sense of control.</p>
+      <p>This approach could make AI-supported services accessible to people who don't actively manage complex AI tools — and reduce the risk that personalization becomes manipulative or exclusionary.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-events" style="top: 180px; left: 360px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — TIMELINE</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// THE JOURNEY</div>
+      <h2>Timeline</h2>
+
+      <div class="tl-sem">
+        <div class="tl-sem-label">SEMESTER 1</div>
+        <div class="tl-item tl-core">M1.1 — Caregiver Interaction</div>
+        <div class="tl-item tl-elec">DCM100 · DLM100 · DBM140</div>
+      </div>
+
+      <div class="tl-sem">
+        <div class="tl-sem-label">SEMESTER 2</div>
+        <div class="tl-item tl-core">M1.2 — Tangible Interaction</div>
+        <div class="tl-item tl-elec">DCM180 · DBM170 · DCM210 · DCM110</div>
+      </div>
+
+      <div class="tl-sem">
+        <div class="tl-sem-label">SEMESTER 3</div>
+        <div class="tl-item tl-core">M2.1 — Dynamic UI Research</div>
+        <div class="tl-item tl-work">Internship @ Orbisk</div>
+      </div>
+
+      <div class="tl-sem">
+        <div class="tl-sem-label">SEMESTER 4</div>
+        <div class="tl-item tl-core">FMP (M2.2) — Adaptive Financial UX</div>
+        <div class="tl-item tl-work">Internship @ Van Lanschot Kempen</div>
+        <div class="tl-item tl-work">LTUX — Event Manager</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-instagram" style="top: 210px; left: 440px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — RESEARCH</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// FOCUS AREAS</div>
+      <h2>Research</h2>
+      <p>My research focuses on the intersection of adaptive interface design and human autonomy. Core question: how should interfaces that interpret and respond to user behaviour be designed to preserve transparency and trust?</p>
+      <p>Particular interest in: role-based interface adaptation, behaviour-driven content personalisation, and the ethics of AI-driven UX decisions in high-stakes domains — finance, healthcare, public services.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-vacation" style="top: 240px; left: 520px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — VALUES</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// WHAT I STAND FOR</div>
+      <h2>Design Values</h2>
+      <p><strong>Clarity</strong> — Opacity is a form of disrespect. Users deserve to understand how systems behave and why.</p>
+      <p><strong>Autonomy</strong> — Design that shapes behavior without transparency accumulates power at the user's expense. Users should remain in control.</p>
+      <p><strong>Trust</strong> — Trust is what makes people willing to rely on systems. It is easy to break and slow to rebuild. Design should earn it.</p>
+      <p><strong>Responsibility</strong> — Designers who build adaptive systems bear responsibility for how those systems interpret and influence users.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-guestbook" style="top: 270px; left: 600px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — CONTACT</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// SAY HELLO</div>
+      <h2>Get in Touch</h2>
+      <p>Currently finishing my master's and actively looking for opportunities in interaction design, UX strategy, and AI-driven product design.</p>
+      <p>If you're working on adaptive systems, AI-UX, or products that need to balance intelligence with user trust — I'd love to talk.</p>
+      <p><strong>Email:</strong> yannywang042@gmail.com</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-settings" style="top: 300px; left: 680px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — SKILLS</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// COMPETENCIES</div>
+      <h2>Skills</h2>
+      <p><strong>Core:</strong> UX Research · Interaction Design · Systems Thinking · Rapid Prototyping · Usability Testing · Behavioural Analysis</p>
+      <p><strong>Tools:</strong> Figma · Cursor · Claude AI · Figma AI Flows</p>
+      <p><strong>Methods:</strong> Contextual Inquiry · Diary Studies · Co-design · Service Design · A/B Testing · Design Research</p>
+      <p><strong>Developing:</strong> AI system architecture · Prompt engineering · Frontend implementation · LLM behaviour design</p>
+    </div>
+  </div>
+
+  <div class="floating-window fw-instagram" id="win-electives" style="top:80px;left:200px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — ELECTIVES</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+
+      <div class="insta-card" id="elec-card-dcm100">
+        <div class="insta-header">
+          <img class="insta-avatar" src="poolsuite.net/favicon.png" alt="">
+          <span class="insta-username">DCM100 – Constructive Design Research</span>
+          <span class="insta-time">Sem 1</span>
+        </div>
+        <div class="insta-img-wrap"><img src="img/dcm100.jpg" alt=""></div>
+        <div class="insta-actions"><span>♡ 12847523 likes</span><span>□ 3829104 comments</span></div>
+        <div class="insta-caption">This study aims to evaluate external Human-Machine Interfaces (eHMIs) using personas based on large language models (LLMs) and human participants recruited through crowdsourcing.</div>
+        <div class="insta-tags">
+          <span class="insta-tag">User &amp; Society</span>
+          <span class="insta-tag">Creativity &amp; Aesthetics</span>
+          <span class="insta-tag">Math, Data &amp; Computing</span>
+        </div>
+      </div>
+
+      <div class="insta-card" id="elec-card-dbm140">
+        <div class="insta-header">
+          <img class="insta-avatar" src="poolsuite.net/favicon.png" alt="">
+          <span class="insta-username">DBM140 – Embodying Intelligent Behavior</span>
+          <span class="insta-time">Sem 1</span>
+        </div>
+        <div class="insta-img-wrap"><img src="img/dbm140.jpg" alt=""></div>
+        <div class="insta-actions"><span>♡ 9284751 likes</span><span>□ 2047103 comments</span></div>
+        <div class="insta-caption">Cyclists face significant risks from surrounding vehicles, contributing to a high rate of traffic-related injuries and fatalities. To address this, we developed CYCLOTRON, a real-time vehicle detection and alert system that uses a YOLOv5 model integrated into a Raspberry Pi-based helmet setup.</div>
+        <div class="insta-tags">
+          <span class="insta-tag">Technology &amp; Realization</span>
+          <span class="insta-tag">User &amp; Society</span>
+          <span class="insta-tag">Math, Data &amp; Computing</span>
+        </div>
+      </div>
+
+      <div class="insta-card" id="elec-card-dcm180">
+        <div class="insta-header">
+          <img class="insta-avatar" src="poolsuite.net/favicon.png" alt="">
+          <span class="insta-username">DCM180 – The Sound of Smart Things</span>
+          <span class="insta-time">Sem 2</span>
+        </div>
+        <div class="insta-img-wrap"><img src="img/dcm180.jpg" alt=""></div>
+        <div class="insta-actions"><span>♡ 7183920 likes</span><span>□ 1594820 comments</span></div>
+        <div class="insta-caption">Investigated sonic interaction design and how audio feedback communicates system state and behavior.</div>
+        <div class="insta-tags">
+          <span class="insta-tag">Technology &amp; Realization</span>
+          <span class="insta-tag">Creativity &amp; Aesthetics</span>
+        </div>
+      </div>
+
+      <div class="insta-card" id="elec-card-dbm170">
+        <div class="insta-header">
+          <img class="insta-avatar" src="poolsuite.net/favicon.png" alt="">
+          <span class="insta-username">DBM170 – Designing User Interfaces with Emerging Technologies</span>
+          <span class="insta-time">Sem 2</span>
+        </div>
+        <div class="insta-img-wrap"><img src="img/dbm170.jpg" alt=""></div>
+        <div class="insta-actions"><span>♡ 18392047 likes</span><span>□ 4820391 comments</span></div>
+        <div class="insta-caption">This research tries to address this challenge by introducing modularity into soft wearables, bridging the gap between the growing yet centralized modular approach and the portable but static nature of soft wearable interfaces.</div>
+        <div class="insta-tags">
+          <span class="insta-tag">Technology &amp; Realization</span>
+          <span class="insta-tag">User &amp; Society</span>
+          <span class="insta-tag">Math, Data &amp; Computing</span>
+        </div>
+      </div>
+
+      <div class="insta-card" id="elec-card-dcm210">
+        <div class="insta-header">
+          <img class="insta-avatar" src="poolsuite.net/favicon.png" alt="">
+          <span class="insta-username">DCM210 – Creativity and Aesthetics of Data &amp; AI</span>
+          <span class="insta-time">Sem 2</span>
+        </div>
+        <div class="insta-img-wrap"><img src="img/dcm210.jpg" alt=""></div>
+        <div class="insta-actions"><span>♡ 23948271 likes</span><span>□ 6102938 comments</span></div>
+        <div class="insta-caption">Examined the creative dimensions of data-driven and AI-generated experiences as expressive material.</div>
+        <div class="insta-tags">
+          <span class="insta-tag">Creativity &amp; Aesthetics</span>
+          <span class="insta-tag">Math, Data &amp; Computing</span>
+        </div>
+      </div>
+
+      <div class="insta-card" id="elec-card-dcm110">
+        <div class="insta-header">
+          <img class="insta-avatar" src="poolsuite.net/favicon.png" alt="">
+          <span class="insta-username">DCM110 – A Designerly Perspective on IoT (RDD)</span>
+          <span class="insta-time">Sem 2</span>
+        </div>
+        <div class="insta-img-wrap"><img src="img/dcm110.png" alt=""></div>
+        <div class="insta-actions"><span>♡ 5829304 likes</span><span>□ 1038472 comments</span></div>
+        <div class="insta-caption">Parameter Minimalism in Rich Growing System.</div>
+        <div class="insta-tags">
+          <span class="insta-tag">Technology &amp; Realization</span>
+          <span class="insta-tag">User &amp; Society</span>
+          <span class="insta-tag">Math, Data &amp; Computing</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-extracurricular" style="top:80px;left:240px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — EXTRACURRICULAR</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ACTIVITIES</div>
+      <h2>Extracurricular</h2>
+      <p>[ To be filled in ]</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-expertise" style="top:80px;left:280px;">
+    <div class="fw-titlebar">
+      <div class="fw-title">YANI WANG — EXPERTISE AREAS</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// COMPETENCY AREAS</div>
+      <h2>Expertise Areas</h2>
+
+      <div class="ea-item">
+        <button class="ea-btn"><span class="ea-icon">⊞</span>User &amp; Society<span class="ea-arrow">▶</span></button>
+        <div class="ea-detail">
+          <p>My strongest area, consistently developed across all four semesters. From designing for caregiver-receiver relationships in FWISH, to evaluating eHMI trust through crowdsourced participants in DCM100, to mapping financial user behavior in FMP — my work is persistently grounded in real human contexts. I conduct structured user research, build contextual understanding before any design decision, and stay attentive to the societal consequences of systems that adapt to people without their full awareness. In high-stakes domains like finance and healthcare, this awareness is not optional; it defines the quality of the design.</p>
+        </div>
+      </div>
+
+      <div class="ea-item">
+        <button class="ea-btn"><span class="ea-icon">⊞</span>Math, Data &amp; Computing<span class="ea-arrow">▶</span></button>
+        <div class="ea-detail">
+          <p>This area grew from a curiosity into a working method. DCM100 introduced me to LLM-based personas as computational proxies for user evaluation — an approach that fundamentally changed how I think about research scalability. DBM140 (CYCLOTRON) required integrating a YOLOv5 detection model into an embedded hardware setup, pushing me into real-time inference and hardware constraints. M2.1 and FMP both involve behavioral data interpretation: how can observable signals — scroll depth, dwell time, navigation patterns — inform adaptive interface decisions without requiring explicit user input or heavy model training? This is the core computational question I am developing fluency in.</p>
+        </div>
+      </div>
+
+      <div class="ea-item">
+        <button class="ea-btn"><span class="ea-icon">⊞</span>Business &amp; Entrepreneurship<span class="ea-arrow">▶</span></button>
+        <div class="ea-detail">
+          <p>Industry shaped this area more than any classroom could. At Orbisk, I designed within real constraints: engineering timelines, client-facing dashboards, and a product roadmap that had to balance innovation against operational feasibility. The internship taught me to frame design decisions in terms of impact and tradeoffs — not just user value, but business value. FMP at Van Lanschot Kempen deepens this further: I work in a context defined by regulatory compliance, premium brand positioning, and long-term client relationships where every UI decision carries reputational weight. I am learning to speak both the language of design and the language of business, and to make them coherent with each other.</p>
+        </div>
+      </div>
+
+      <div class="ea-item">
+        <button class="ea-btn"><span class="ea-icon">⊞</span>Technology &amp; Realization<span class="ea-arrow">▶</span></button>
+        <div class="ea-detail">
+          <p>I treat technology as a design material — something to shape meaning with, not merely to implement. Meta Touch required understanding pneumatic actuation well enough to design with it intentionally. CYCLOTRON demanded embedded systems thinking. FMP requires me to work with front-end adaptive logic, understanding what is computationally lightweight and what is not, and what kinds of AI-driven behavior are legible to users versus opaque. This area is still developing: I want to build deeper hands-on implementation skills, particularly in adaptive UI systems that respond to behavioral signals in real time without requiring back-end infrastructure or explicit user configuration.</p>
+        </div>
+      </div>
+
+      <div class="ea-item">
+        <button class="ea-btn"><span class="ea-icon">⊞</span>Creativity &amp; Aesthetics<span class="ea-arrow">▶</span></button>
+        <div class="ea-detail">
+          <p>My aesthetic position is one of productive restraint. I am drawn to systems where visual decisions are load-bearing — where the choice of hierarchy, density, motion, or typographic tone actively communicates how the system works and why it can be trusted. DCM210 gave me language for this: the aesthetics of data and AI are not decorative, they are epistemic — they shape what users believe about a system's intentions. DCM180 extended this into the sonic dimension. In FMP, I am applying these ideas directly: studying how the visual language of a financial interface — its rhythm, its whitespace, its responsiveness — affects perceived credibility and user confidence. Creativity, for me, is not the spark before the process; it is the precision with which form serves meaning.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project floating windows -->
+  <div class="floating-window" id="win-proj-m11">
+    <div class="fw-titlebar">
+      <div class="fw-title">M1.1 — FWISH</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-proj-img"><img src="img/m11.jpg" alt="M1.1"></div>
+      <div class="fw-tag">// M1 · SEMESTER 1</div>
+      <h2>FWISH</h2>
+      <p>This isn't just another app. It's a tangible experience designed to fit into every day life and foster genuine moments of joy.</p>
+      <ul>
+        <li>Strengthen positive connections between caregivers and care receivers.</li>
+        <li>Encourage collaboration through fun, small interactions.</li>
+        <li>Bring back nostalgia and shared memories to enrich relationships.</li>
+        <li>Use playful prompts to communicate wishes, needs, or ideas — making it easier to understand and support one another.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-proj-m12">
+    <div class="fw-titlebar">
+      <div class="fw-title">M1.2 — META TOUCH</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-proj-img"><img src="img/m12.jpg" alt="M1.2"></div>
+      <div class="fw-tag">// M1 · SEMESTER 2</div>
+      <h2>Meta Touch</h2>
+      <p>Enhancing User Experience through Haptic Interaction through Pneumatic Shape-Changing Tangible Interfaces.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-proj-m21">
+    <div class="fw-titlebar">
+      <div class="fw-title">M2.1 — ORBISK ASSISTANT</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-proj-img"><img src="img/m21.jpg" alt="M2.1"></div>
+      <div class="fw-tag">// M2 · INDUSTRY INTERNSHIP</div>
+      <h2>Orbisk Assistant</h2>
+      <p>Orbisk is a company dedicated to reducing food waste. Our solution consists of Orbi, a hardware device that monitors the weight and types of ingredients being discarded, and dashboards that provide clients with actionable insights.</p>
+      <p>Different stakeholders use different parts of the Orbisk dashboard, yet each needs to manually search through the full dashboard to find relevant insights. How can AI adapt interface layouts and visualizations to user behavior or intent at low cost — no heavy computation, no explicit model training, minimal user effort?</p>
+      <p>Instead of only adapting the UI for them, we want to understand how users express intentions, preferences, and tasks, and how AI can respond with the right level of autonomy. Future development will focus on designing intuitive interaction patterns to make the dashboard not only adaptive, but also truly collaborative.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-proj-fmp">
+    <div class="fw-titlebar">
+      <div class="fw-title">FMP — DYNAMIC UX IN THE FINANCIAL CONTEXT</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-proj-img"><img src="img/m22.jpg" alt="FMP"></div>
+      <div class="fw-tag">// FINAL MASTER PROJECT</div>
+      <h2>Dynamic UX in the Financial Context</h2>
+      <p>This research focuses on a dynamic personalization approach and explores it within the practical business context of Van Lanschot Kempen (VLK). As a Dutch private bank, VLK is currently undergoing digital transformation in the AI era, seeking to establish a new balance between technological innovation, long-term client relationships, and premium wealth management experiences.</p>
+      <p>At the same time, the company is guided by the values of being Personal, Specialised, and Entrepreneurial. This suggests that personalization in financial contexts should not merely serve as a tool for efficiency optimization, but should also support stable and sustainable user experiences built around long-term relationships, professional credibility, and user trust.</p>
+      <p>Based on this context, the research focuses more on how dynamic UI can be embedded into existing financial product interaction flows, rather than requiring users to continuously communicate with AI through explicit conversational interaction. Within this research direction, public-facing financial websites are selected as the primary research environment to further explore the adaptivity and trustworthiness of GenUI in financial settings.</p>
+    </div>
+  </div>
+
+  <!-- Elective floating windows -->
+  <div class="floating-window" id="win-elec-dcm100">
+    <div class="fw-titlebar">
+      <div class="fw-title">DCM100 — CONSTRUCTIVE DESIGN RESEARCH</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ELECTIVE</div>
+      <h2>Constructive Design Research</h2>
+      <p>Explored research through design practice — using prototypes, interventions, and artefacts as instruments of inquiry rather than outputs of a process.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-elec-dbm140">
+    <div class="fw-titlebar">
+      <div class="fw-title">DBM140 — EMBODYING INTELLIGENT BEHAVIOR</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ELECTIVE</div>
+      <h2>Embodying Intelligent Behavior</h2>
+      <p>Examined how intelligent and adaptive behaviors can be embedded into products and systems — exploring the relationship between AI capabilities and tangible, experiential design.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-elec-dcm180">
+    <div class="fw-titlebar">
+      <div class="fw-title">DCM180 — THE SOUND OF SMART THINGS</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ELECTIVE</div>
+      <h2>The Sound of Smart Things</h2>
+      <p>Investigated sonic interaction design and how audio feedback can communicate system state, behavior, and intelligence in connected and smart products.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-elec-dbm170">
+    <div class="fw-titlebar">
+      <div class="fw-title">DBM170 — DESIGNING UI WITH EMERGING TECH</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ELECTIVE</div>
+      <h2>Designing User Interfaces with Emerging Technologies</h2>
+      <p>Explored interface design for emerging technological contexts — including AI-driven, sensor-based, and context-aware systems. Focused on how new technological affordances change interaction paradigms.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-elec-dcm210">
+    <div class="fw-titlebar">
+      <div class="fw-title">DCM210 — CREATIVITY AND AESTHETICS OF DATA & AI</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ELECTIVE</div>
+      <h2>Creativity and Aesthetics of Data &amp; AI</h2>
+      <p>Examined the creative and aesthetic dimensions of data-driven and AI-generated experiences — exploring how designers can engage with these systems as expressive and experiential material.</p>
+    </div>
+  </div>
+
+  <div class="floating-window" id="win-elec-dcm110">
+    <div class="fw-titlebar">
+      <div class="fw-title">DCM110 — A DESIGNERLY PERSPECTIVE ON IoT</div>
+      <div class="fw-close">✕</div>
+    </div>
+    <div class="fw-body">
+      <div class="fw-tag">// ELECTIVE · RDD</div>
+      <h2>A Designerly Perspective on IoT</h2>
+      <p>Investigated the Internet of Things through a design research lens — exploring how connected systems can be shaped to serve human needs while remaining legible, controllable, and trustworthy.</p>
+    </div>
+  </div>
+
+<script>
+  // Custom retro scrollbar
+  const scrollEl   = document.getElementById('content-scroll');
+  const thumb      = document.getElementById('scroll-thumb');
+  const track      = document.getElementById('scroll-track');
+  const upBtn      = document.getElementById('scroll-up');
+  const downBtn    = document.getElementById('scroll-down');
+
+  function updateThumb() {
+    const trackH  = track.clientHeight;
+    const ratio   = scrollEl.clientHeight / scrollEl.scrollHeight;
+    const thumbH  = Math.max(24, ratio * trackH);
+    const maxTop  = trackH - thumbH;
+    const scrollRatio = scrollEl.scrollTop / (scrollEl.scrollHeight - scrollEl.clientHeight);
+    thumb.style.height = thumbH + 'px';
+    thumb.style.top    = (scrollRatio * maxTop) + 'px';
+  }
+
+  scrollEl.addEventListener('scroll', updateThumb);
+  window.addEventListener('resize', updateThumb);
+  updateThumb();
+
+  upBtn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    scrollEl.scrollBy(0, -60);
+    const iv = setInterval(() => scrollEl.scrollBy(0, -60), 80);
+    document.addEventListener('mouseup', () => clearInterval(iv), { once: true });
+  });
+  downBtn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    scrollEl.scrollBy(0, 60);
+    const iv = setInterval(() => scrollEl.scrollBy(0, 60), 80);
+    document.addEventListener('mouseup', () => clearInterval(iv), { once: true });
+  });
+
+  track.addEventListener('click', e => {
+    if (e.target === thumb) return;
+    const rect = track.getBoundingClientRect();
+    const pos  = (e.clientY - rect.top) / rect.height;
+    scrollEl.scrollTop = pos * (scrollEl.scrollHeight - scrollEl.clientHeight);
+  });
+
+  let thumbDrag = false, thumbStartY = 0, thumbStartScroll = 0;
+  thumb.addEventListener('mousedown', e => {
+    thumbDrag = true;
+    thumbStartY      = e.clientY;
+    thumbStartScroll = scrollEl.scrollTop;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!thumbDrag) return;
+    const trackH  = track.clientHeight;
+    const thumbH  = thumb.offsetHeight;
+    const dy      = e.clientY - thumbStartY;
+    const ratio   = dy / (trackH - thumbH);
+    scrollEl.scrollTop = thumbStartScroll + ratio * (scrollEl.scrollHeight - scrollEl.clientHeight);
+  });
+  document.addEventListener('mouseup', () => { thumbDrag = false; });
+
+  // Inject custom retro scrollbar into every floating window
+  document.querySelectorAll('.floating-window').forEach(win => {
+    const body = win.querySelector('.fw-body');
+    if (!body) return;
+
+    const row = document.createElement('div');
+    row.className = 'fw-row' + (win.classList.contains('fw-instagram') ? ' fw-tall' : '');
+    body.parentNode.insertBefore(row, body);
+    row.appendChild(body);
+
+    const sb = document.createElement('div');
+    sb.className = 'custom-scrollbar';
+    sb.innerHTML = '<div class="scroll-btn scroll-up">▲</div><div class="scroll-track"><div class="scroll-thumb"></div></div><div class="scroll-btn scroll-down">▼</div>';
+    row.appendChild(sb);
+
+    const upBtn  = sb.querySelector('.scroll-up');
+    const track  = sb.querySelector('.scroll-track');
+    const thumb  = sb.querySelector('.scroll-thumb');
+    const downBtn = sb.querySelector('.scroll-down');
+
+    function fwUpdateThumb() {
+      const trackH = track.clientHeight;
+      const ratio  = body.clientHeight / Math.max(1, body.scrollHeight);
+      const thumbH = Math.max(24, ratio * trackH);
+      const maxTop = trackH - thumbH;
+      const sr     = body.scrollTop / Math.max(1, body.scrollHeight - body.clientHeight);
+      thumb.style.height = thumbH + 'px';
+      thumb.style.top    = (sr * maxTop) + 'px';
+    }
+
+    body.addEventListener('scroll', fwUpdateThumb);
+    new MutationObserver(fwUpdateThumb).observe(win, { attributes: true, attributeFilter: ['class', 'style'] });
+
+    upBtn.addEventListener('mousedown', e => {
+      e.preventDefault();
+      body.scrollBy(0, -60);
+      const iv = setInterval(() => body.scrollBy(0, -60), 80);
+      document.addEventListener('mouseup', () => clearInterval(iv), { once: true });
+    });
+    downBtn.addEventListener('mousedown', e => {
+      e.preventDefault();
+      body.scrollBy(0, 60);
+      const iv = setInterval(() => body.scrollBy(0, 60), 80);
+      document.addEventListener('mouseup', () => clearInterval(iv), { once: true });
+    });
+
+    track.addEventListener('click', e => {
+      if (e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      body.scrollTop = ((e.clientY - rect.top) / rect.height) * (body.scrollHeight - body.clientHeight);
+    });
+
+    let fwDrag = false, fwStartY = 0, fwStartScroll = 0;
+    thumb.addEventListener('mousedown', e => {
+      fwDrag = true; fwStartY = e.clientY; fwStartScroll = body.scrollTop; e.preventDefault();
+    });
+    document.addEventListener('mousemove', e => {
+      if (!fwDrag) return;
+      const dy    = e.clientY - fwStartY;
+      const ratio = dy / (track.clientHeight - thumb.offsetHeight);
+      body.scrollTop = fwStartScroll + ratio * (body.scrollHeight - body.clientHeight);
+    });
+    document.addEventListener('mouseup', () => { fwDrag = false; });
+
+    fwUpdateThumb();
+  });
+
+  // Section indicator — filebar updates as user scrolls to each red heading
+  const filebarTitle = document.getElementById('filebar-title');
+  const sectionHeads = scrollEl.querySelectorAll('h1, h2');
+
+  function updateFilebar() {
+    let current = 'PI&V AND PDP';
+    sectionHeads.forEach(h => {
+      if (h.offsetTop <= scrollEl.scrollTop + 40) {
+        current = h.textContent;
+      }
+    });
+    filebarTitle.textContent = '◂ ▸ ' + current;
+  }
+
+  scrollEl.addEventListener('scroll', updateFilebar);
+  updateFilebar();
+
+  // Auto-show Timeline window while scrolling through Personal Identity section
+  const winTimeline = document.getElementById('win-events');
+  let identityHead = null, visionHead = null;
+  sectionHeads.forEach(h => {
+    if (!identityHead && h.textContent.trim() === '1. PERSONAL IDENTITY') identityHead = h;
+    if (!visionHead  && h.textContent.trim() === '2. VISION')             visionHead  = h;
+  });
+
+  function updateTimelineVisibility() {
+    if (!identityHead || !visionHead) return;
+    const st = scrollEl.scrollTop;
+    const inSection = st >= identityHead.offsetTop - 80 && st < visionHead.offsetTop - 80;
+    const isActive  = winTimeline.classList.contains('active');
+    if (inSection && !isActive) {
+      // Position to the right of the main window
+      const mainWin  = document.querySelector('.window');
+      const mainRect = mainWin.getBoundingClientRect();
+      const bodyRect = document.body.getBoundingClientRect();
+      const tlLeft   = Math.min(mainRect.right - bodyRect.left + 24, window.innerWidth - 404);
+      const tlTop    = mainRect.top  - bodyRect.top  + 60;
+      winTimeline.style.left = tlLeft + 'px';
+      winTimeline.style.top  = tlTop  + 'px';
+      winTimeline.classList.add('active');
+      bringToFront(winTimeline);
+    } else if (!inSection && isActive) {
+      winTimeline.classList.remove('active');
+    }
+  }
+
+  scrollEl.addEventListener('scroll', updateTimelineVisibility);
+  updateTimelineVisibility(); // show on initial load if section 1 is already visible
+
+  // Live clock
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock-text').textContent = ' ' + h + ':' + m;
+  }
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  let topZ = 50;
+
+  function bringToFront(win) {
+    topZ += 1;
+    win.style.zIndex = topZ;
+  }
+
+  document.querySelectorAll('.dock-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const key = item.dataset.modal;
+      const win = document.getElementById('win-' + key);
+      if (!win) return;
+      // Position near centre-top if not already placed by user
+      if (!win.dataset.placed) {
+        const mainWin  = document.querySelector('.window');
+        const mainRect = mainWin.getBoundingClientRect();
+        const bodyRect = document.body.getBoundingClientRect();
+        const tlLeft   = Math.min(mainRect.right - bodyRect.left + 24, window.innerWidth - 404);
+        const tlTop    = mainRect.top - bodyRect.top + 60;
+        win.style.left = tlLeft + 'px';
+        win.style.top  = tlTop  + 'px';
+        win.dataset.placed = '1';
+      }
+      win.classList.add('active');
+      bringToFront(win);
+    });
+  });
+
+  document.querySelectorAll('.fw-close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', () => {
+      closeBtn.closest('.floating-window').classList.remove('active');
+    });
+  });
+
+  document.querySelectorAll('.floating-window').forEach(win => {
+    const titlebar = win.querySelector('.fw-titlebar');
+    let offsetX = 0, offsetY = 0, dragging = false;
+
+    win.addEventListener('mousedown', () => bringToFront(win));
+    win.addEventListener('touchstart', () => bringToFront(win), { passive: true });
+
+    function startDrag(clientX, clientY) {
+      const rect = win.getBoundingClientRect();
+      offsetX = clientX - rect.left;
+      offsetY = clientY - rect.top;
+      dragging = true;
+      win.classList.add('dragging');
+      bringToFront(win);
+    }
+
+    function moveDrag(clientX, clientY) {
+      if (!dragging) return;
+      const parentRect = win.offsetParent.getBoundingClientRect();
+      let newLeft = clientX - parentRect.left - offsetX;
+      let newTop  = clientY - parentRect.top  - offsetY;
+      newLeft = Math.max(0, Math.min(newLeft, parentRect.width - win.offsetWidth));
+      newTop  = Math.max(0, newTop);
+      win.style.left = newLeft + 'px';
+      win.style.top  = newTop  + 'px';
+    }
+
+    function endDrag() { dragging = false; win.classList.remove('dragging'); }
+
+    titlebar.addEventListener('mousedown', e => { startDrag(e.clientX, e.clientY); e.preventDefault(); });
+    document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+    document.addEventListener('mouseup', endDrag);
+
+    titlebar.addEventListener('touchstart', e => {
+      const t = e.touches[0]; startDrag(t.clientX, t.clientY);
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      const t = e.touches[0]; moveDrag(t.clientX, t.clientY);
+    }, { passive: true });
+    document.addEventListener('touchend', endDrag);
+  });
+
+  // Project panel — tab switching
+  document.querySelectorAll('.pp-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.pp-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const pane = tab.dataset.tab;
+      document.getElementById('pp-pane-core').style.display = pane === 'core' ? '' : 'none';
+      document.getElementById('pp-pane-elec').style.display = pane === 'elec' ? '' : 'none';
+    });
+  });
+
+  // Project panel — descriptions
+  const ppDescs = {
+    'm11':    'M1.1 — Investigated the relationship between caregivers and care receivers using a physical product to mediate and support their interaction.',
+    'm12':    'M1.2 — Explored tangible interaction through air-activated buttons, examining the design space where physical action meets digital feedback.',
+    'm21':    'M2.1 — Industry internship at Orbisk. Research on whether role-based dynamic UI adaptation can become a meaningful and feasible design proposition. Results were positive.',
+    'fmp':    'FMP — Behaviour-driven dynamic content adaptation in public-facing financial websites. How interfaces can respond to users without undermining transparency or trust.',
+    'dcm100': 'DCM100 – Constructive Design Research.',
+    'dlm100': 'DLM100 – ID Professional Identity & Vision.',
+    'dbm140': 'DBM140 – Embodying Intelligent Behavior.',
+    'dcm180': 'DCM180 – The Sound of Smart Things.',
+    'dbm170': 'DBM170 – Designing User Interfaces with Emerging Technologies.',
+    'dcm210': 'DCM210 – Creativity and Aesthetics of Data & AI.',
+    'dcm110': 'DCM110 – A Designerly Perspective on IoT (RDD).',
+  };
+
+  const ppDescEl = document.getElementById('pp-desc');
+
+  const projWinMap = { m11: 'win-proj-m11', m12: 'win-proj-m12', m21: 'win-proj-m21', fmp: 'win-proj-fmp' };
+
+  document.querySelectorAll('.pp-icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pp-icon-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      // Close all project windows
+      Object.values(projWinMap).forEach(id => document.getElementById(id).classList.remove('active'));
+
+      // Open corresponding project window to the right of the main window
+      const winId = projWinMap[btn.dataset.id];
+      if (winId) {
+        const projWin  = document.getElementById(winId);
+        const mainWin  = document.querySelector('.window');
+        const mainRect = mainWin.getBoundingClientRect();
+        const bodyRect = document.body.getBoundingClientRect();
+        const tlLeft   = Math.min(mainRect.right - bodyRect.left + 24, window.innerWidth - 404);
+        const tlTop    = mainRect.top - bodyRect.top + 60;
+        projWin.style.left = tlLeft + 'px';
+        projWin.style.top  = tlTop  + 'px';
+        projWin.classList.add('active');
+        bringToFront(projWin);
+      }
+    });
+  });
+
+  document.querySelectorAll('.pp-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.pp-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+
+      // Open the main Electives window
+      const winElec  = document.getElementById('win-electives');
+      if (!winElec.dataset.placed) {
+        const mainWin  = document.querySelector('.window');
+        const mainRect = mainWin.getBoundingClientRect();
+        const bodyRect = document.body.getBoundingClientRect();
+        const tlLeft   = Math.min(mainRect.right - bodyRect.left + 24, window.innerWidth - 484);
+        const tlTop    = mainRect.top - bodyRect.top + 60;
+        winElec.style.left = tlLeft + 'px';
+        winElec.style.top  = tlTop  + 'px';
+        winElec.dataset.placed = '1';
+      }
+      winElec.classList.add('active');
+      bringToFront(winElec);
+
+      // Scroll to the corresponding card inside the window
+      const card = document.getElementById('elec-card-' + item.dataset.id);
+      const body = winElec.querySelector('.fw-body');
+      if (card && body) {
+        setTimeout(() => { body.scrollTop = card.offsetTop - 8; }, 50);
+      }
+    });
+  });
+
+  // Main content expertise toggles
+  document.querySelectorAll('.ea-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const isOpen = btn.classList.contains('open');
+      btn.classList.toggle('open', !isOpen);
+      btn.querySelector('.ea-toggle-arrow').textContent = isOpen ? '▶' : '▼';
+      body.style.display = isOpen ? 'none' : 'block';
+    });
+  });
+
+  // Expertise area accordion (floating window)
+  document.querySelectorAll('.ea-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const detail = btn.nextElementSibling;
+      const isOpen = btn.classList.contains('open');
+      btn.classList.toggle('open', !isOpen);
+      btn.querySelector('.ea-arrow').textContent = isOpen ? '▶' : '▼';
+      detail.style.display = isOpen ? 'none' : 'block';
+    });
+  });
+</script>
+
+</body>
+</html>
